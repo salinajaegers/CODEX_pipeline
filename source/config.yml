@@ -1,0 +1,57 @@
+data: '50intp_final'
+
+name: 'e100b256'
+scripts: '/data/users/sjaegers/research_project/scripts/pipeline'
+
+prep:
+  training: 0.6
+  validation: 0.25
+  test: 0.15
+  seed: 2
+
+training:
+  #for the model
+  nclass: 
+  length: 
+  nfeatures: 10
+  batch: 50
+  lr: 0.01
+  schedule: 
+  gamma: 0.01
+  penalty: 0.001
+  # For the data
+  measurement:
+  startTime: 
+  endTime: 
+  # For the trainer
+  nepochs: 100
+  ngpu: 0
+  ncpuLoad: 10
+  # Logs and reproducibility
+  seed: 7
+  # Handle imbalanced datasets
+  #imba: False
+
+prototypes:
+  seed: 7
+  batch: 256
+  n_prototypes: 5
+  threshold_confidence: 0.75
+
+pca:
+  seed: 7
+  batch: 256
+  perc_selected_ids: 0.1
+  threshold_confidence: 0.75
+
+motif analysis:
+  seed: 7
+  n_series_perclass: 50
+  n_pattern_perseries: 1
+  mode_series_selection: least_correlated #'top_confidence'
+  thresh_confidence: 0.75  # used in least_correlated mode to choose set of series with minimal classification confidence
+  extend_patt: 0
+  min_len_patt: 0
+  max_len_patt: 200 # length to divide by nchannel
+  batch: 256
+

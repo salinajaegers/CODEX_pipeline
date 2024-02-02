@@ -1,0 +1,141 @@
+#configfile: "../config.yml"
+
+DATA=str(config['data'])
+NAME=str(config['name'])
+SCRIPTS=str(config['scripts'])
+MODELNAME=config['name'] + '_model.pytorch'
+
+rule targets:
+    input:
+        #'id_set.csv',
+        #DATA + '.zip',
+        'results_' + NAME + '/model/' + MODELNAME,
+        'results_' + NAME + '/prototypes/confusionTable_' + str(config['prototypes']['n_prototypes']) + '.csv',
+        'results_' + NAME + '/prototypes/tops_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/uncorr_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/worsts_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/random_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/protoTable_' + str(config['prototypes']['n_prototypes']) + '.csv',
+        'results_' + NAME + '/pca/pca_all.pdf',
+        'results_' + NAME + '/pca/pca_all.csv',
+        'results_' + NAME + '/pca/pca_tops_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_tops_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_worsts_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_worsts_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_randoms_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_randoms_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_uncorr_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_uncorr_' + str(config['pca']['perc_selected_ids']) + '.csv'
+
+
+
+
+
+rule data_preparation:
+    input:
+        classes = 'classes.csv',
+        dataset = 'dataset.csv'
+    output:
+        'id_set.csv'
+    params:
+        scripts = SCRIPTS
+    script:
+        SCRIPTS + '/data_prep.py'
+
+rule zipping:
+    input:
+        'classes.csv',
+        'dataset.csv',
+        'id_set.csv'
+    output:
+        zip = DATA + '.zip'
+    shell:
+        'zip {output.zip} *'
+
+rule training:
+    input:
+        DATA + '.zip'
+    output:
+        'results_' + NAME + '/model/' + MODELNAME
+    params:
+        zip = DATA + '.zip',
+        scripts = SCRIPTS
+    script:
+        SCRIPTS +'/train_model.py'
+
+
+rule tensorboard:
+    input:
+        model = './model/{measurements}_model.pytorch'
+    output:
+        './tensorboard/tb.png
+    singularity: {sif}
+    script:
+        'tensorboard.py'
+
+
+rule prototypes:
+    input:
+        DATA + '.zip',
+        'results_' + NAME + '/model/' + MODELNAME
+    output:
+        'results_' + NAME + '/prototypes/confusionTable_' + str(config['prototypes']['n_prototypes']) + '.csv',
+        'results_' + NAME + '/prototypes/tops_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/uncorr_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/worsts_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/random_' + str(config['prototypes']['n_prototypes']) + '.pdf',
+        'results_' + NAME + '/prototypes/protoTable_' + str(config['prototypes']['n_prototypes']) + '.csv'
+    params:
+        zip = DATA + '.zip',
+        model = 'results_' + NAME + '/model/' + MODELNAME,
+        scripts = SCRIPTS
+    script:
+        SCRIPTS+'/prototypes.py'
+
+
+rule pca:
+    input:
+        DATA + '.zip',
+        'results_' + NAME + '/model/' + MODELNAME
+    output:
+        'results_' + NAME + '/pca/pca_all.pdf',
+        'results_' + NAME + '/pca/pca_all.csv',
+        'results_' + NAME + '/pca/pca_tops_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_tops_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_worsts_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_worsts_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_randoms_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_randoms_' + str(config['pca']['perc_selected_ids']) + '.csv',
+        'results_' + NAME + '/pca/pca_uncorr_' + str(config['pca']['perc_selected_ids']) + '.pdf',
+        'results_' + NAME + '/pca/pca_uncorr_' + str(config['pca']['perc_selected_ids']) + '.csv'
+    params:
+        zip = DATA + '.zip',
+        model = 'results_' + NAME + '/model/' + MODELNAME,
+        scripts = SCRIPTS
+    script:
+        SCRIPTS+'/pca.py'
+
+
+
+rule pattern_mining:
+    input:
+        DATA + '.zip',
+        'results_' + NAME + '/model/' + MODELNAME
+    output:
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+        'results_' + NAME + '/pattern_mining/
+    params:
+        zip = DATA + '.zip',
+        model = 'results_' + NAME + '/model/' + MODELNAME,
+        scripts = SCRIPTS
+    script:
+        SCRIPTS+'/pattern_mining.py'
+
