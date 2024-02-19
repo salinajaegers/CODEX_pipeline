@@ -3,7 +3,7 @@
 This is a pipeline made for CODEX (https://github.com/pertzlab/CODEX) using snakemake. The Pipeline is using the CNN-training, the prototype selection, and the motif mining from CODEX. A PCA has been added as well as the option to have an interactive exploration of the PCA results in a notebook separate from the pipeline. The motif analysis part of CODEX which is done in R has not yet been added to the pipeline and needs to be set up locally. 
 
 ## Installing CODEX
-First, the environment for CODEX needs to be configured with singularity. To do so install singularity and run 'singularity build sing_CODEX_CPU_pipeline_motif.sif sing_CODEX_CPU_pipeline_motif.def' to creat the singularity image. Alternatively, a GPU-compatible environment can be created in Conda using the instructions from the original CODEX documentation. In this case, Snakemake and pyyaml would need to be added to the environment manually. 
+First, the environment for CODEX needs to be configured with singularity. To do so install singularity and run 'singularity build sing_CODEX_CPU_pipeline_motif.sif sing_CODEX_CPU_pipeline_motif.def' to creat the singularity image. Currently the image is only woking with CPU only. Alternatively, a GPU-compatible environment can be created in Conda using the instructions from the original CODEX documentation. In this case, Snakemake and pyyaml would need to be added to the environment manually. 
 
 The pipeline can then be started from the main notebook 'CODEX pipeline.ipynb' within the singularity. In the notebook only the configurations like the training parameters need to be set, more details are provided within the notebook. 
 
